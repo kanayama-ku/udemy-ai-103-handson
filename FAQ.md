@@ -118,9 +118,22 @@ az rest --method get `
 
 ---
 
-## 4. `401`（認証エラー）
+## 4. `401`（認証エラー）／`DefaultAzureCredential failed to retrieve a token`
 
 `az login` が済んでいないか、トークンが期限切れです。`az login` をやり直し、`az account show` で目的のサブスクリプションが選ばれているか確認してください。
+
+`DefaultAzureCredential failed to retrieve a token from the included credentials` と表示され、環境変数・マネージドID・VS Code・Azure CLI・Azure PowerShell などの資格情報が**すべて失敗した**と出る場合も、原因は同じで、Azure CLI にサインインしていません。
+
+```powershell
+az version     # Azure CLI が入っているか確認（無ければインストールしてターミナルを開き直す）
+az login       # ブラウザでサインイン
+az account show --query "{subscription:name, state:state}" -o table
+```
+
+- **Codespaces の場合や、ブラウザが開かない場合**は `az login --use-device-code` を使います。表示された URL（https://microsoft.com/devicelogin ）を手元のブラウザで開き、表示されたコードを入力します。
+- 目的のサブスクリプションが出ない場合は、`az login --tenant <テナントID>` でテナントを指定するか、`az account set --subscription "<名前またはID>"` で切り替えます。
+- 詳しい手順は [Hello, Foundry の README の手順0](00_intro/L0-3_hello_foundry/README.md#0-azure-cli-にサインインする初回だけ) にあります。
+- 本講座の SDK（`azure-ai-projects` 2.x）は Entra ID 認証にのみ対応しているため、API キーに切り替えて回避することはできません。
 
 ## 5. `403`（権限エラー）
 

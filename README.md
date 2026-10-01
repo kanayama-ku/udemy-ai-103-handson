@@ -34,8 +34,10 @@ Udemy 講座 **「AI-103 Developing AI Apps and Agents 試験対策講座」** �
    ```
 4. `az login` 済みであることを確認して実行。
    ```bash
+   az login                        # 初回だけ。Codespaces やブラウザが開かない環境は az login --use-device-code
    python main.py
    ```
+   > これは全レッスン共通の大まかな流れです。**Azure リソースの作成など、レッスンごとの具体的な手順は各レッスンフォルダの `README.md` にあります。** 最初は [`00_intro/L0-3_hello_foundry`](00_intro/L0-3_hello_foundry/README.md) の手順0（`az login`）から進めてください。
 
 ## ディレクトリ構成
 ```

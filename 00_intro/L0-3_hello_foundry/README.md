@@ -18,10 +18,11 @@ Microsoft Foundry プロジェクトに**キーレス**（`DefaultAzureCredentia
 
 ## 進め方（コピペで実行できます）
 
-全部で11手順です。各手順のコードブロックを、そのままターミナルに貼り付けて実行します。
+全部で11手順です（その前に、初回だけ手順0で Azure CLI にサインインします）。各手順のコードブロックを、そのままターミナルに貼り付けて実行します。
 
 | 手順 | やること |
 |---|---|
+| 0 | Azure CLI にサインインする（初回だけ） |
 | 1 | サインイン先を確かめる |
 | 2 | クォータティアを確認する |
 | 3 | リソースグループを作る |
@@ -41,10 +42,27 @@ Microsoft Foundry プロジェクトに**キーレス**（`DefaultAzureCredentia
 > cd 00_intro/L0-3_hello_foundry
 > ```
 
+### 0. Azure CLI にサインインする（初回だけ）
+このハンズオンは、Azure CLI でサインインしたアカウントの資格情報を、コマンドと `main.py`（`DefaultAzureCredential`）の両方で使います。まず Azure CLI が入っているかを確認します。
+```powershell
+az version
+```
+`az` が見つからないと表示された場合は、[Azure CLI をインストール](https://learn.microsoft.com/cli/azure/install-azure-cli)してから、ターミナルを開き直してください（Codespaces / Dev Container には最初から入っています）。
+
+続いてサインインします。
+```powershell
+az login
+```
+- ブラウザが開くので、Azure サブスクリプションのアカウントでサインインします。サブスクリプションが複数ある場合は、ターミナルに一覧が出るので、使うものの番号を選びます。
+- **Codespaces の場合や、ブラウザが開かない場合**は `az login --use-device-code` を実行します。表示された URL（https://microsoft.com/devicelogin ）を手元のブラウザで開き、表示されたコードを入力してサインインします。
+- 複数のテナント（ディレクトリ）に所属していて目的のサブスクリプションが一覧に出ない場合は、`az login --tenant <テナントID>` でテナントを指定します。
+- サインインは一度行えば、以降のレッスンでもそのまま使えます。Codespaces を作り直した場合や、時間がたって `401` やトークン期限切れのエラーが出た場合は、もう一度 `az login` を実行してください。
+
 ### 1. サインイン先を確かめる
 ```powershell
 az account show --query "{subscription:name, state:state}" -o table
 ```
+使うサブスクリプション名が表示されればOKです。別のサブスクリプションが出た場合は `az account set --subscription "<サブスクリプション名またはID>"` で切り替えます。
 
 ### 2. クォータティアを確認する（ポータルには出ないので API で見る）
 ```powershell
@@ -167,6 +185,7 @@ python main.py
 呼び出しが成功したことと、答えの内容が正しいことは別です。モデルはそれらしい文章を自信を持って書くことがあるので、内容が正しいかは自分で確認してください。
 
 ## つまずき
+- **`DefaultAzureCredential failed to retrieve a token`**（環境変数・マネージドID・Azure CLI などの資格情報がすべて失敗した、という表示）：Azure CLI にサインインしていません。手順0の `az login` を実行してください。
 - **`401`（認証エラー）**：`az login` していない／トークン期限切れ。`az login` をやり直し、`az account show` で正しいサブスクリプションか確認。
 - **`403`**：手順8の **Foundry User** ロールが付いているか確認（付けた直後は反映に数分かかることがある）。
 - **`404`（モデルが見つからない）**：`.env` の `MODEL_DEPLOYMENT` は**カタログ名ではなくデプロイ名**。実際のデプロイ名と一致しているか確認。
